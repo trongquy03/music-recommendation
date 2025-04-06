@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.trongquy.common.UserStatus;
 import vn.trongquy.controller.request.UserCreationRequest;
 import vn.trongquy.controller.request.UserPasswordRequest;
+import vn.trongquy.controller.request.UserUpdateRequest;
 import vn.trongquy.controller.response.UserResponse;
+import vn.trongquy.exception.ResourceNotFoundException;
 import vn.trongquy.model.UserEntity;
 import vn.trongquy.repository.UserRepository;
 import vn.trongquy.service.UserService;
@@ -61,8 +63,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(UserCreationRequest req) {
-
+    public UserEntity update(Long id,UserUpdateRequest req) {
+        log.info("Updating user {}", req);
+        UserEntity user = getUserEntity(id);
+        user.setUsername(req.getUsername());
+        user.setGender(req.getGender());
+        user.setBirthday(req.getBirthday());
+        user.setEmail(req.getEmail());
+        user.setPhone(req.getPhone());
+        return userRepository.save(user);
     }
 
     @Override
@@ -73,5 +82,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
 
+    }
+
+    private UserEntity getUserEntity(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

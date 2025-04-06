@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import vn.trongquy.controller.request.UserCreationRequest;
+import vn.trongquy.controller.request.UserUpdateRequest;
 import vn.trongquy.controller.response.ResponseObject;
 import vn.trongquy.controller.response.UserResponse;
 import vn.trongquy.model.UserEntity;
@@ -21,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Slf4j(topic = "USER-CONTROLLER")
 @Tag(name = "UserController")
 public class UserController {
     private final UserService userService;
@@ -57,6 +60,34 @@ public class UserController {
                 .data(UserResponse.fromUser(user))
                 .message("Account registration successful")
                 .build());
+    }
+
+    @Operation(summary = "Update user", description = "Api retrieve from db")
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<ResponseObject> updateUser( @PathVariable Long userId,
+                                                      @RequestBody UserUpdateRequest request,
+                                                     BindingResult result) throws Exception {
+        if (result.hasErrors()) {
+            List<String> errorMessages = result.getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(ResponseObject.builder()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .data(null)
+                    .message(errorMessages.toString())
+                    .build());
+        }
+
+        UserEntity user = userService.update(userId,request);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .message("Update user detail successfully")
+                        .data(UserResponse.fromUser(user))
+                        .status(HttpStatus.OK)
+                        .build()
+        );
     }
 
 }
