@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import vn.trongquy.controller.request.UserCreationRequest;
+import vn.trongquy.controller.request.UserPasswordRequest;
 import vn.trongquy.controller.request.UserUpdateRequest;
 import vn.trongquy.controller.response.ResponseObject;
 import vn.trongquy.controller.response.UserResponse;
@@ -86,6 +87,30 @@ public class UserController {
                         .message("Update user detail successfully")
                         .data(UserResponse.fromUser(user))
                         .status(HttpStatus.OK)
+                        .build()
+        );
+    }
+
+
+    @Operation(summary = "Update user", description = "Api retrieve from db")
+    @PutMapping("/change-pwd/{userId}")
+    public ResponseEntity<ResponseObject> changePassword(@Valid @PathVariable long userId,@RequestBody UserPasswordRequest request){
+
+        userService.changePassword(userId, request);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .message("Change pw user successfully")
+                        .status(HttpStatus.OK)
+                        .build());
+    }
+
+    @Operation(summary = "Update user", description = "Api retrieve from db")
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<ResponseObject> blockOrEnable(@PathVariable Long userId){
+        userService.blockOrEnable(userId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .message("Delete user successfully")
                         .build()
         );
     }

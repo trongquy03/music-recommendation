@@ -3,6 +3,7 @@ package vn.trongquy.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.trongquy.common.UserStatus;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<UserResponse> findAll() {
@@ -75,13 +77,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(UserPasswordRequest req) {
+    public void changePassword(Long id ,UserPasswordRequest req) {
+        log.info("Changing password for user {}", req);
+        UserEntity user = getUserEntity(id);
+//
+//        // 1. Kiểm tra mật khẩu cũ có khớp không
+//        if (!passwordEncoder.matches(req.getOldPassword(), user.getPassword())) {
+//            throw new IllegalArgumentException("Mật khẩu cũ không đúng!");
+//        }
+//
+//        // 2. Kiểm tra mật khẩu mới và confirm có giống nhau không
+//        if (!req.getPassword().equals(req.getConfirmPassword())) {
+//            throw new IllegalArgumentException("Mật khẩu mới không khớp xác nhận!");
+//        }
+//
+//        // 3. Cập nhật mật khẩu
+//        user.setPassword(passwordEncoder.encode(req.getPassword()));
+//        userRepository.save(user);
+//
+//        log.info("Changed password successfully for user id: {}", id);
 
+        if (req.getPassword().equals(req.getConfirmPassword())) {
+            user.setPassword(passwordEncoder.encode(req.getPassword()));
+        }
+
+        userRepository.save(user);
+        log.info("Changed password for user {}", user);
     }
 
     @Override
-    public void delete(Long id) {
-
+    public void blockOrEnable(Long id) {
+        UserEntity user = getUserEntity(id);
+        user.setStatus(UserStatus.INACTIVE);
+        userRepository.save(user);
     }
 
     private UserEntity getUserEntity(Long id) {

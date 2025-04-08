@@ -22,7 +22,7 @@ public interface UserService {
 
     UserEntity update(Long id,UserUpdateRequest req);
 
-    void changePassword(UserPasswordRequest req);
+    void changePassword(Long id ,UserPasswordRequest req);
 
-    void delete(Long id);
+    void blockOrEnable(Long id);
 }
