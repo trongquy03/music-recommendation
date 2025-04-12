@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import vn.trongquy.common.Gender;
 import vn.trongquy.common.UserStatus;
 import vn.trongquy.model.UserEntity;
 
@@ -21,9 +22,9 @@ public class UserResponse{
     @JsonProperty("username")
     private String userName;
 
-//    private String gender;
-//
-//    private Date birthday;
+    private Gender gender;
+
+    private Date birthday;
 
     private String email;
 

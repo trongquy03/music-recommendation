@@ -18,7 +18,6 @@ import vn.trongquy.controller.response.UserResponse;
 import vn.trongquy.model.UserEntity;
 import vn.trongquy.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -33,8 +32,10 @@ public class UserController {
     @GetMapping("")
     public List<UserResponse> getList(
             @RequestParam(required = false) String keyWord,
+            @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+        userService.findAll(, , , );
         return null;
     }
 
@@ -87,6 +88,18 @@ public class UserController {
                         .message("Update user detail successfully")
                         .data(UserResponse.fromUser(user))
                         .status(HttpStatus.OK)
+                        .build()
+        );
+    }
+
+    @Operation(summary = "Get user detail", description = "Api retrieve from db")
+    @GetMapping("/{userId}")
+    public ResponseEntity<ResponseObject> getUserDetail(@PathVariable Long userId) {
+        UserEntity user = userService.findById(userId);
+        return ResponseEntity.ok().body(
+                ResponseObject.builder()
+                        .status(HttpStatus.OK)
+                        .data(UserResponse.fromUser(user))
                         .build()
         );
     }

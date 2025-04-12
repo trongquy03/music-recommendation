@@ -2,10 +2,10 @@ package vn.trongquy.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import vn.trongquy.common.UserStatus;
 import vn.trongquy.controller.request.UserCreationRequest;
 import vn.trongquy.controller.request.UserPasswordRequest;
@@ -26,13 +26,27 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UserResponse> findAll() {
+    public List<UserEntity> findAll(String keyword, String sort, int page, int size) {
+        if (StringUtils.hasLength(keyword)) {
+
+        }
         return List.of();
     }
 
     @Override
-    public UserResponse findById(Long id) {
-        return null;
+    public UserEntity findById(Long id) {
+
+        UserEntity userEntity = getUserEntity(id);
+
+        return UserEntity.builder()
+                .id(userEntity.getId())
+                .username(userEntity.getUsername())
+                .gender(userEntity.getGender())
+                .birthday(userEntity.getBirthday())
+                .email(userEntity.getEmail())
+                .phone(userEntity.getPhone())
+                .status(userEntity.getStatus())
+                .build();
     }
 
     @Override

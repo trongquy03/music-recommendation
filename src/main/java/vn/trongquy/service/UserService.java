@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface UserService {
 
-    List<UserResponse> findAll();
+    List<UserEntity> findAll(String keyword, String sort, int page, int size);
 
-    UserResponse findById(Long id);
+    UserEntity findById(Long id);
 
     UserResponse findByUsername(String username);
 
