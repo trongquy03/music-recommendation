@@ -3,6 +3,7 @@ package vn.trongquy.service;
 import vn.trongquy.controller.request.UserCreationRequest;
 import vn.trongquy.controller.request.UserPasswordRequest;
 import vn.trongquy.controller.request.UserUpdateRequest;
+import vn.trongquy.controller.response.UserPageResponse;
 import vn.trongquy.controller.response.UserResponse;
 import vn.trongquy.model.UserEntity;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface UserService {
 
-    List<UserEntity> findAll(String keyword, String sort, int page, int size);
+    UserPageResponse findAll(String keyword, String sort, int page, int size);
 
     UserEntity findById(Long id);
 

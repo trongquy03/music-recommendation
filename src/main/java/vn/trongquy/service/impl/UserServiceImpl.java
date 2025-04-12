@@ -2,6 +2,10 @@ package vn.trongquy.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +14,7 @@ import vn.trongquy.common.UserStatus;
 import vn.trongquy.controller.request.UserCreationRequest;
 import vn.trongquy.controller.request.UserPasswordRequest;
 import vn.trongquy.controller.request.UserUpdateRequest;
+import vn.trongquy.controller.response.UserPageResponse;
 import vn.trongquy.controller.response.UserResponse;
 import vn.trongquy.exception.ResourceNotFoundException;
 import vn.trongquy.model.UserEntity;
@@ -17,6 +22,8 @@ import vn.trongquy.repository.UserRepository;
 import vn.trongquy.service.UserService;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j(topic = "USER-SERVICE")
@@ -26,11 +33,57 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UserEntity> findAll(String keyword, String sort, int page, int size) {
+    public UserPageResponse findAll(String keyword, String sort, int page, int size) {
         if (StringUtils.hasLength(keyword)) {
 
         }
-        return List.of();
+
+        //sorting
+        Sort.Order order = new Sort.Order(Sort.Direction.ASC, "id");
+        if (StringUtils.hasLength(sort)) {
+            Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
+            Matcher matcher = pattern.matcher(sort);
+            if (matcher.find()) {
+                String column = matcher.group(1);
+                if(matcher.group(3).equalsIgnoreCase("asc")) {
+                    order = new Sort.Order(Sort.Direction.ASC, column);
+                }else {
+                    order = new Sort.Order(Sort.Direction.DESC, column);
+                }
+            }
+        }
+
+        // page start = 1
+        int pageNo = 0;
+        if (page > 0){
+            pageNo = page - 1;
+        }
+
+        //paging
+        Pageable pageable = PageRequest.of(pageNo, size, Sort.by(order));
+
+        Page<UserEntity> userEntities = userRepository.findAll(pageable);
+
+        List<UserResponse> userList = userEntities.stream().map(entity -> UserResponse.builder()
+                .id(entity.getId())
+                .userName(entity.getUsername())
+                .gender(entity.getGender())
+                .birthday(entity.getBirthday())
+                .email(entity.getEmail())
+                .phone(entity.getPhone())
+                .status(entity.getStatus())
+                .build()
+
+        ).toList();
+
+        UserPageResponse response = new UserPageResponse();
+        response.setPageNumber(page);
+        response.setPageSize(size);
+        response.setTotalElements(userEntities.getTotalElements());
+        response.setTotalPages(userEntities.getTotalPages());
+        response.setUsers(userList);
+
+        return response;
     }
 
     @Override

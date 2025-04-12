@@ -14,6 +14,7 @@ import vn.trongquy.controller.request.UserCreationRequest;
 import vn.trongquy.controller.request.UserPasswordRequest;
 import vn.trongquy.controller.request.UserUpdateRequest;
 import vn.trongquy.controller.response.ResponseObject;
+import vn.trongquy.controller.response.UserPageResponse;
 import vn.trongquy.controller.response.UserResponse;
 import vn.trongquy.model.UserEntity;
 import vn.trongquy.service.UserService;
@@ -30,13 +31,18 @@ public class UserController {
 
     @Operation(summary = "Get user list", description = "Api retrieve from db")
     @GetMapping("")
-    public List<UserResponse> getList(
+    public ResponseEntity<ResponseObject> getList(
             @RequestParam(required = false) String keyWord,
             @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        userService.findAll(, , , );
-        return null;
+        UserPageResponse pageResponse = userService.findAll(keyWord,sort , page, size );
+        return ResponseEntity.ok(ResponseObject.builder()
+                .status(HttpStatus.OK)
+                .data(pageResponse)
+                .message("Get user list")
+                .build());
+
     }
 
     @Operation(summary = "Create user", description = "Api retrieve from db")
