@@ -34,9 +34,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserPageResponse findAll(String keyword, String sort, int page, int size) {
-        if (StringUtils.hasLength(keyword)) {
-
-        }
 
         //sorting
         Sort.Order order = new Sort.Order(Sort.Direction.ASC, "id");
@@ -62,29 +59,20 @@ public class UserServiceImpl implements UserService {
         //paging
         Pageable pageable = PageRequest.of(pageNo, size, Sort.by(order));
 
-        Page<UserEntity> userEntities = userRepository.findAll(pageable);
+        Page<UserEntity> entityPage;
 
-        List<UserResponse> userList = userEntities.stream().map(entity -> UserResponse.builder()
-                .id(entity.getId())
-                .userName(entity.getUsername())
-                .gender(entity.getGender())
-                .birthday(entity.getBirthday())
-                .email(entity.getEmail())
-                .phone(entity.getPhone())
-                .status(entity.getStatus())
-                .build()
+        if (StringUtils.hasLength(keyword)) {
+            keyword = "%" + keyword.toLowerCase() + "%";
+            entityPage = userRepository.searchByKeyword(keyword,pageable);
 
-        ).toList();
+        }else {
+            entityPage = userRepository.findAll(pageable);
+        }
 
-        UserPageResponse response = new UserPageResponse();
-        response.setPageNumber(page);
-        response.setPageSize(size);
-        response.setTotalElements(userEntities.getTotalElements());
-        response.setTotalPages(userEntities.getTotalPages());
-        response.setUsers(userList);
+        return getUserPageResponse(page, size, entityPage);
 
-        return response;
     }
+
 
     @Override
     public UserEntity findById(Long id) {
@@ -181,5 +169,27 @@ public class UserServiceImpl implements UserService {
 
     private UserEntity getUserEntity(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private static UserPageResponse getUserPageResponse(int page, int size, Page<UserEntity> userEntities) {
+        List<UserResponse> userList = userEntities.stream().map(entity -> UserResponse.builder()
+                .id(entity.getId())
+                .userName(entity.getUsername())
+                .gender(entity.getGender())
+                .birthday(entity.getBirthday())
+                .email(entity.getEmail())
+                .phone(entity.getPhone())
+                .status(entity.getStatus())
+                .build()
+
+        ).toList();
+
+        UserPageResponse response = new UserPageResponse();
+        response.setPageNumber(page);
+        response.setPageSize(size);
+        response.setTotalElements(userEntities.getTotalElements());
+        response.setTotalPages(userEntities.getTotalPages());
+        response.setUsers(userList);
+        return response;
     }
 }

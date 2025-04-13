@@ -32,11 +32,11 @@ public class UserController {
     @Operation(summary = "Get user list", description = "Api retrieve from db")
     @GetMapping("")
     public ResponseEntity<ResponseObject> getList(
-            @RequestParam(required = false) String keyWord,
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        UserPageResponse pageResponse = userService.findAll(keyWord,sort , page, size );
+        UserPageResponse pageResponse = userService.findAll(keyword,sort , page, size );
         return ResponseEntity.ok(ResponseObject.builder()
                 .status(HttpStatus.OK)
                 .data(pageResponse)

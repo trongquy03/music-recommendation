@@ -53,7 +53,6 @@ public class UserEntity {
     private UserType type;
 
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name ="status", length = 255)
     private UserStatus status;
 
