@@ -75,7 +75,7 @@ public class UserController {
 
     @Operation(summary = "Update user", description = "Api retrieve from db")
     @PutMapping("/update/{userId}")
-    public ResponseEntity<ResponseObject> updateUser( @PathVariable Long userId,
+    public ResponseEntity<ResponseObject> updateUser(@Valid @PathVariable Long userId,
                                                       @RequestBody UserUpdateRequest request,
                                                      BindingResult result) throws Exception {
         if (result.hasErrors()) {

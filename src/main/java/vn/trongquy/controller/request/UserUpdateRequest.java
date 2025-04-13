@@ -1,5 +1,6 @@
 package vn.trongquy.controller.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.ToString;
@@ -13,6 +14,7 @@ import java.util.Date;
 public class UserUpdateRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @NotBlank(message = "username must be not blank")
     private String username;
     private Gender gender;
     private Date birthday;
