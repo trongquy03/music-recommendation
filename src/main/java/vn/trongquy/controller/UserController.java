@@ -3,12 +3,14 @@ package vn.trongquy.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import vn.trongquy.controller.request.UserCreationRequest;
 import vn.trongquy.controller.request.UserPasswordRequest;
@@ -24,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Validated
 @Slf4j(topic = "USER-CONTROLLER")
 @Tag(name = "UserController")
 public class UserController {
@@ -100,7 +103,7 @@ public class UserController {
 
     @Operation(summary = "Get user detail", description = "Api retrieve from db")
     @GetMapping("/{userId}")
-    public ResponseEntity<ResponseObject> getUserDetail(@PathVariable Long userId) {
+    public ResponseEntity<ResponseObject> getUserDetail(@PathVariable @Min(value = 1, message = "UserId must be equals or greater than 1") Long userId) {
         UserEntity user = userService.findById(userId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()
@@ -123,9 +126,9 @@ public class UserController {
                         .build());
     }
 
-    @Operation(summary = "Update user", description = "Api retrieve from db")
+    @Operation(summary = "Delete user", description = "Api retrieve from db")
     @DeleteMapping("/delete/{userId}")
-    public ResponseEntity<ResponseObject> blockOrEnable(@PathVariable Long userId){
+    public ResponseEntity<ResponseObject> blockOrEnable(@PathVariable @Min(value = 1, message = "UserId must be equals or greater than 1") Long userId){
         userService.blockOrEnable(userId);
         return ResponseEntity.ok().body(
                 ResponseObject.builder()

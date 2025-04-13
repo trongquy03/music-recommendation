@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.ToString;
 import vn.trongquy.common.Gender;
-import vn.trongquy.common.UserType;
 
 import java.io.Serializable;
 import java.util.Date;

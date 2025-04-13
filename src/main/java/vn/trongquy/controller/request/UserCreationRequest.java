@@ -1,5 +1,7 @@
 package vn.trongquy.controller.request;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.ToString;
@@ -13,9 +15,15 @@ import java.util.Date;
 @Getter
 @ToString
 public class UserCreationRequest implements Serializable {
+
+    @NotBlank(message = "username must be not blank")
     private String username;
+
     private Gender gender;
+
     private Date birthday;
+
+    @Email(message = "Email invalid")
     private String email;
 
     @Pattern(
@@ -23,6 +31,7 @@ public class UserCreationRequest implements Serializable {
             message = "Invalid phone number format"
     )
     private String phone;
+
     private UserType type;
 
 }
