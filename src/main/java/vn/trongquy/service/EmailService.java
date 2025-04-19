@@ -1,15 +1,12 @@
 package vn.trongquy.service;
 
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
-import com.sendgrid.SendGrid;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,33 +16,29 @@ import java.io.IOException;
 @Slf4j(topic = "Email Service")
 public class EmailService {
 
-    @Value("${spring.sendgrid.from-email}")
+    private final JavaMailSender mailSender;
+
+//    @Value("${spring.mail.username}")
+//    private String from;
+    @Value("${spring.mail.properties.mail.default-from}")
     private String from;
 
-    private final SendGrid sendGrid;
-
-    public void sendEmail(String to, String subject, String body) {
-        Email fromEmail = new Email(from);
-        Email toEmail = new Email(to);
-
-        Content content = new Content("text/plain", body);
-        Mail mail = new Mail(fromEmail, subject, toEmail, content);
-
-        Request request = new Request();
-
+    public boolean sendVerificationEmail(String toEmail, String subject, String body) {
         try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(from);
+            message.setTo(toEmail);
+            message.setSubject(subject);
+            message.setText(body);
+            mailSender.send(message);
 
-            Response response = sendGrid.api(request);
-            if (response.getStatusCode() == 202) {
-                log.error("Email sent successfully");
-            }else {
-                log.info("Error sending mail");
-            }
-        } catch (IOException e) {
-            log.error("Error occured while sending mail", e.getMessage());
+            System.out.println("Email sent to: " + toEmail);
+            return true;
+        } catch (MailException ex) {
+            System.err.println("Failed to send email to: " + toEmail);
+            ex.printStackTrace(); // hoặc dùng logger.error(...)
+            return false;
         }
+
     }
 }

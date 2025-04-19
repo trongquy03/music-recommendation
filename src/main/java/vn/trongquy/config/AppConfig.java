@@ -1,9 +1,11 @@
 package vn.trongquy.config;
 
-import com.sendgrid.SendGrid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -11,13 +13,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.Properties;
+
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 public class AppConfig {
 
-    @Value("${spring.sendgrid.api-key}")
-    private String sendgridApiKey;
+    @Value("${spring.mail.username}")
+    private String from;
+
+    @Value("${spring.mail.password}")
+    private String apiKey;
 
     //spring web security
     @Bean
@@ -42,7 +49,21 @@ public class AppConfig {
     }
 
     @Bean
-    public SendGrid sendGrid(){
-        return new SendGrid(sendgridApiKey);
+    public JavaMailSender javaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost("smtp-relay.brevo.com");
+        mailSender.setPort(587);
+        mailSender.setUsername(from);  // Thay thế bằng email của bạn
+        mailSender.setPassword(apiKey);  // Thay thế bằng API key của bạn
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        return mailSender;
     }
+
+//    @Bean
+//    public SendGrid sendGrid(){
+//        return new SendGrid(sendgridApiKey);
+//    }
 }
