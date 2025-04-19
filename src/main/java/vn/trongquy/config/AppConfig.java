@@ -53,8 +53,8 @@ public class AppConfig {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp-relay.brevo.com");
         mailSender.setPort(587);
-        mailSender.setUsername(from);  // Thay thế bằng email của bạn
-        mailSender.setPassword(apiKey);  // Thay thế bằng API key của bạn
+        mailSender.setUsername(from);
+        mailSender.setPassword(apiKey);
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", "true");
@@ -62,8 +62,4 @@ public class AppConfig {
         return mailSender;
     }
 
-//    @Bean
-//    public SendGrid sendGrid(){
-//        return new SendGrid(sendgridApiKey);
-//    }
 }

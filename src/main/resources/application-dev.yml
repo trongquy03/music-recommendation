@@ -1,0 +1,48 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  devtools:
+    add-properties: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5439/postgres
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  mail:
+    host: smtp-relay.brevo.com
+    port: 587
+    username: 8ae775001@smtp-brevo.com
+    password: ${BREVO_SMTP_KEY}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        default-from: trongquy1628@gmail.com
+
+
+# application-dev.yml
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+openapi:
+  service:
+    api-docs: music-web
+    server: http://localhost:${server.port}
+    title: Backend service
+    version: 1.0.0

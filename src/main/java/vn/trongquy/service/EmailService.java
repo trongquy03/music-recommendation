@@ -9,8 +9,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j(topic = "Email Service")
@@ -18,8 +16,6 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-//    @Value("${spring.mail.username}")
-//    private String from;
     @Value("${spring.mail.properties.mail.default-from}")
     private String from;
 
