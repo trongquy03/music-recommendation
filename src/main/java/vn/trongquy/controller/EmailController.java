@@ -2,7 +2,6 @@ package vn.trongquy.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,5 +25,13 @@ public class EmailController {
     private String generateRandomCode() {
         return String.valueOf((int)(Math.random() * 900000) + 100000); // Random 6 chữ số
     }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<String> sendEmailVerify(@RequestParam String email) {
+        emailService.sendVerificationMail(email);
+        return ResponseEntity.ok("Verification email sent!");
+    }
+
+
 
 }

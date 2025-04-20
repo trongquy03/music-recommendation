@@ -19,6 +19,7 @@ import vn.trongquy.controller.response.UserResponse;
 import vn.trongquy.exception.ResourceNotFoundException;
 import vn.trongquy.model.UserEntity;
 import vn.trongquy.repository.UserRepository;
+import vn.trongquy.service.EmailService;
 import vn.trongquy.service.UserService;
 
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public UserPageResponse findAll(String keyword, String sort, int page, int size) {
@@ -116,8 +118,19 @@ public class UserServiceImpl implements UserService {
                 .type(req.getType())
                 .status(UserStatus.NONE)
                 .build();
+
+
+        // send email confirm
+        try {
+            emailService.sendVerificationMail(req.getEmail());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return userRepository.save(user);
+
     }
+
 
     @Override
     public UserEntity update(Long id,UserUpdateRequest req) {

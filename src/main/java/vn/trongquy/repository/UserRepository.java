@@ -13,6 +13,7 @@ import vn.trongquy.model.UserEntity;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     boolean existsByPhone(String phone);
     boolean existsByEmail(String email);
+    UserEntity findByEmail(String email);
 
 
     @Query("SELECT u FROM UserEntity u WHERE u.status = 'ACTIVE' " +

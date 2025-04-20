@@ -47,6 +47,9 @@ public class UserEntity {
     @Column(name ="password", length = 255)
     private String password;
 
+    @Column(name = "email_verified", nullable = false, columnDefinition = "boolean default false")
+    private boolean emailVerified;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name ="type", length = 255)

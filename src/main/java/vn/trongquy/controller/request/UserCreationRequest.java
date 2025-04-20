@@ -24,6 +24,7 @@ public class UserCreationRequest implements Serializable {
     private Date birthday;
 
     @Email(message = "Email invalid")
+    @NotBlank(message = "email must be not blank")
     private String email;
 
     @Pattern(

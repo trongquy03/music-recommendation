@@ -33,6 +33,17 @@ spring:
             enable: true
         default-from: trongquy1628@gmail.com
 
+brevo:
+  api-key: ${BREVO_API_KEY}
+  template:
+    verification:
+      id: 2
+  sender:
+    email: trongquy1628@gmail.com
+    name: MUSIC
+  verification:
+    link: http://localhost:8080/user/confirm-email
+
 
 # application-dev.yml
 springdoc:

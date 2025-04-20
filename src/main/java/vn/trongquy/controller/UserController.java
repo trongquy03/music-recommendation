@@ -2,12 +2,14 @@ package vn.trongquy.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -18,10 +20,16 @@ import vn.trongquy.controller.request.UserUpdateRequest;
 import vn.trongquy.controller.response.ResponseObject;
 import vn.trongquy.controller.response.UserPageResponse;
 import vn.trongquy.controller.response.UserResponse;
+import vn.trongquy.model.EmailVerification;
 import vn.trongquy.model.UserEntity;
+import vn.trongquy.repository.EmailVerificationRepository;
+import vn.trongquy.repository.UserRepository;
+import vn.trongquy.service.EmailService;
 import vn.trongquy.service.UserService;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/user")
@@ -31,6 +39,8 @@ import java.util.List;
 @Tag(name = "UserController")
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
+    private final EmailVerificationRepository emailVerificationRepository;
 
     @Operation(summary = "Get user list", description = "Api retrieve from db")
     @GetMapping("")
@@ -135,6 +145,44 @@ public class UserController {
                         .message("Delete user successfully")
                         .build()
         );
+    }
+
+    @Operation(summary = "Confirm Email", description = "Confirm email for account")
+    @GetMapping("/confirm-email")
+    public void confirmEmail(@RequestParam String secretCode, HttpServletResponse response) throws IOException {
+        log.info("Confirm email for account with secretCode: {}", secretCode);
+
+        try {
+            // Kiểm tra mã xác minh trong cơ sở dữ liệu
+            Optional<EmailVerification> emailVerificationOptional = emailVerificationRepository.findByVerificationCode(secretCode);
+
+            if (emailVerificationOptional.isPresent()) {
+                EmailVerification emailVerification = emailVerificationOptional.get();
+
+
+                // Cập nhật trạng thái xác minh thành công
+                UserEntity user = emailVerification.getUser();
+                user.setEmailVerified(true);
+                userRepository.save(user);
+
+                // Xóa mã xác minh đã sử dụng
+                emailVerificationRepository.delete(emailVerification);
+
+                // Chuyển hướng người dùng đến trang thành công
+                log.info("Email verified successfully for user: {}", user.getEmail());
+                response.sendRedirect("https://tayjava.vn/verification-success");
+            } else {
+                log.error("Verification code not found");
+                response.sendRedirect("https://tayjava.vn/verification-failed?reason=notfound");
+            }
+        } catch (Exception e) {
+            log.error("Verification failed", e.getMessage(), e);
+            response.sendRedirect("https://tayjava.vn/verification-failed?reason=error");
+        } finally {
+            // Đảm bảo rằng luôn chuyển hướng đến trang wp-admin
+            log.info("Email verification process completed, redirecting...");
+            response.sendRedirect("https://tayjava.vn/wp-admin/");
+        }
     }
 
 }
