@@ -3,13 +3,15 @@ package vn.trongquy.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "tbl_artist")
+@Table(name = "artists")
 public class ArtistEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,4 +22,7 @@ public class ArtistEntity {
 
     @Column(name = "spotify_id", unique = true)
     private String spotifyId;
+
+    @ManyToMany(mappedBy = "artists")
+    private List<SongEntity> songs;
 }

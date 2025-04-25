@@ -3,6 +3,8 @@ package vn.trongquy.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Entity
@@ -15,7 +17,10 @@ public class AlbumEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private String name;
+
+    private LocalDate releaseDate;
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "artist_id", nullable = false)

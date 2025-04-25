@@ -24,10 +24,16 @@ import java.util.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @Slf4j(topic = "UserEntity")
 @Table(name = "users")
-public class  UserEntity extends AbstractEntity<Long> implements UserDetails, Serializable {
+public class UserEntity implements UserDetails, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     @Column(name ="username",unique = true, nullable = false, length = 255)
     private String username;
@@ -68,6 +74,16 @@ public class  UserEntity extends AbstractEntity<Long> implements UserDetails, Se
 
     @Column(name = "google_account_id")
     private String googleAccountId;
+
+    @Column(name = "created_at", length = 255)
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", length = 255)
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)

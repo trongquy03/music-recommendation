@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,6 +21,8 @@ public class SongEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     private String title;
 
     @ManyToOne
@@ -28,8 +31,6 @@ public class SongEntity {
 
     private Integer durationMs;
 
-    private String genre;
-
     private Integer popularity = 0;
 
     @Column(name = "spotify_id", unique = true)
@@ -37,21 +38,33 @@ public class SongEntity {
 
     private String filePath;
 
-    @Enumerated(EnumType.STRING)
-    private SongSource source = SongSource.DATASET;
+    private String imageUrl;
 
-    @Column(name ="created_at", length = 255)
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreationTimestamp
-    private Date createdAt;
+    @ManyToMany
+    @JoinTable(
+            name = "song_artists",
+            joinColumns = @JoinColumn(name = "song_id"),
+            inverseJoinColumns = @JoinColumn(name = "artist_id")
+    )
+    private List<ArtistEntity> artists;
 
-    @Column(name ="updated_at", length = 255)
-    @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
-    private Date updatedAt;
+    @ManyToMany
+    @JoinTable(
+            name = "song_genres",
+            joinColumns = @JoinColumn(name = "song_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private List<GenreEntity> genres;
 
-    public enum SongSource {
-        SPOTIFY, DATASET
-    }
+//    @Column(name ="created_at", length = 255)
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @CreationTimestamp
+//    private Date createdAt;
+//
+//    @Column(name ="updated_at", length = 255)
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @UpdateTimestamp
+//    private Date updatedAt;
+
 
 }
